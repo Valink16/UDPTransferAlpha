@@ -1,5 +1,7 @@
 from myLib import *
 import netifaces
+from sys import getsizeof
+from time import sleep,time
 try:
     import socket
 except:
@@ -17,32 +19,49 @@ def targtInfo(baseIP):
 
 def send():
     sender=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    interfaces=netifaces.interfaces()
+    interfaces=netifaces.interfaces()#Gets a list of available network interfaces
 
-    with open("sample.txt","rb") as file:
-        sendFile=file.read()
-    for i,a in enumerate(interfaces):
+    for i,a in enumerate(interfaces):#Printing the list of interfaces(got the list from line 20)
         print("[{}]{}".format(i,a))
     print("")
-
-
 
     chInter=int(input("Chose an interface(enter the number): "))
     if(interfaces[chInter]=="lo"):
         ipBase="localhost"
     else:
-        ipInfos=netifaces.ifaddresses(interfaces[chInter])
-        infos=ipInfos[netifaces.AF_INET]
-        ipBase=infos[0]["broadcast"][:11]
+        ipInfos=netifaces.ifaddresses(interfaces[chInter])#Gets all infos of local network from the chosen interface
+        infos=ipInfos[netifaces.AF_INET]#Gets the ipv4 part
+        ipBase=infos[0]["broadcast"][:11]#Gets broadcast from infos[0] dictionnary
 
-    log(ipBase)
     trgt=targtInfo(ipBase)
-    log("IP : {}".format(trgt[0]))
-    log("PORT : {}".format(trgt[1]))
-    log("Ready to communicate. Be sure that target is ready")
+    continuer=True
+    while(continuer):
+        log(ipBase)
+        with open(input("Name of the file to open: "),"rb") as file:
+            sendFile=file.read()
 
-    while(True):
-        msg=input().encode("utf-8")
-        sender.sendto(msg,trgt)
-        if(msg==b"exit" or msg==b"stop"):
-            break
+        log("IP : {}".format(trgt[0]))
+        log("PORT : {}".format(trgt[1]))
+        log("Ready to communicate. Be sure that target is ready")
+        s=0
+        e=1024
+        tStart=time()
+        sChoice=int(input("Select speed:\n[0]:High speed\n[1]:Slow speed\n[2]:Very slow speed\n"))
+        if(sChoice==0):
+            waitTime=0.0003
+        elif(sChoice==1):
+            waitTime=0.001
+        elif(sChoice==2):
+            waitTime=0.01
+        for i in range(1+(getsizeof(sendFile)//1024)):
+            sender.sendto(sendFile[s:e],trgt)
+            s+=1024
+            e+=1024
+            sleep(waitTime)
+
+        print("Finished in {}s".format(time()-tStart))
+        sender.sendto(b"stop",trgt)
+        if(ask("Do you want to restart ?","Y","N")):
+            continuer=True
+        else:
+            continuer=False
