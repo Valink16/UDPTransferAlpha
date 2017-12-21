@@ -23,5 +23,5 @@ def recv():
         except:
             log("Not stopping")
         print("Received {} bytes".format(i*1057))
-    with open("recu.txt","wb") as file:
+    with open(input("Save as: "),"wb") as file:
         file.write(total)
