@@ -17,7 +17,7 @@ def recv():
         print(getsizeof(recved))
         i+=1
 
-        if recved.decode("utf-8")=="stop" or recved.decode("utf-8")=="exit" :
+        if recved==b"stop" or recved==b"exit" :
                 break
 
         total+=recved
