@@ -16,12 +16,12 @@ def recv():
         recved, senderInfo=receiver.recvfrom(1024)
         print(getsizeof(recved))
         i+=1
-        total+=recved
-        try:
-            if(recved.decode("utf-8")=="stop" or recved.decode("utf-8")=="exit"):
+
+        if recved.decode("utf-8")=="stop" or recved.decode("utf-8")=="exit" :
                 break
-        except:
-            log("Not stopping")
-        print("Received {} bytes".format(i*1057))
+
+        total+=recved
+
+        print("Received {} bytes".format(len(total)))
     with open(input("Save as: "),"wb") as file:
         file.write(total)
