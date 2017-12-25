@@ -1,8 +1,12 @@
 from myLib import *
-import netifaces, platform, winreg
+import netifaces, platform
 from sys import getsizeof
 from time import sleep,time
 
+try:
+	import winreg
+except:
+	log("Not importing winreg")
 try:
     import socket
 except:
