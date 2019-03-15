@@ -1,10 +1,6 @@
 from sys import getsizeof
 from myLib import *
-try:
-    import socket
-except:
-    log("Failed to load socket")
-    exit()
+import socket
 
 def recv():
     total=b""
